@@ -7,6 +7,8 @@ import './styles/tokens.css'
 import './index.css'
 import App from './App'
 import './App.css'
+import './components/Header.css'
+import './styles/urna.css'
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>

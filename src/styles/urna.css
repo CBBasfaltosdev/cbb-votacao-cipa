@@ -1,0 +1,419 @@
+/*
+  Extensão "urna" do design system da CBB.
+
+  Nenhuma cor nova: tudo sai de tokens.css. O que muda aqui é a ESCALA. O design system
+  do cbb-agendamentos foi dimensionado para alguém sentado, com celular na mão (.botao-primario
+  tem 44px, .slot tem 52px). A urna é usada em pé, num galpão, possivelmente de luva, com fila
+  esperando e a tela a mais de um braço de distância — por isso alvo mínimo de 64px e corpo
+  de texto em 18px.
+*/
+
+:root {
+  /* Toque — derivados da escala de espaçamento existente */
+  --urna-alvo-min: 64px;        /* piso de qualquer controle tocável */
+  --urna-alvo-primario: 80px;   /* ação primária */
+  --urna-alvo-decisivo: 96px;   /* "Começar a votar", "Confirmar meu voto" */
+  --urna-alvo-linha: 96px;      /* linha de candidato */
+  --urna-largura-max: 640px;    /* senão, em tablet deitado, número e nome vão para pontas opostas */
+  --urna-gutter: var(--space-5);
+
+  /* Tipografia — Manrope, pesos da marca */
+  --urna-txt-titulo: 2rem;      /* 32px / 800 */
+  --urna-txt-destaque: 1.75rem; /* 28px / 800 */
+  --urna-txt-nome: 1.375rem;    /* 22px / 700 */
+  --urna-txt-corpo: 1.125rem;   /* 18px / 400 */
+  --urna-txt-apoio: 1rem;       /* 16px / 500 */
+  --urna-txt-micro: 0.875rem;   /* 14px / 600, caixa alta */
+}
+
+@media (min-width: 768px) {
+  :root { --urna-gutter: var(--space-6); }
+}
+
+/* ------------------------------------------------------------- estrutura */
+
+.urna-pagina {
+  min-height: 100vh;
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  background: var(--color-surface);
+}
+
+.urna-conteudo {
+  flex: 1;
+  width: 100%;
+  max-width: var(--urna-largura-max);
+  margin: 0 auto;
+  padding: var(--space-6) var(--urna-gutter) var(--space-7);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.urna-centrado { justify-content: center; text-align: left; }
+
+.urna-micro {
+  font-size: var(--urna-txt-micro);
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+}
+
+.urna-titulo {
+  font-size: var(--urna-txt-titulo);
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  line-height: 1.25;
+  color: var(--color-ink);
+  margin: 0;
+}
+
+.urna-destaque {
+  font-size: var(--urna-txt-destaque);
+  font-weight: 800;
+  line-height: 1.2;
+  color: var(--color-ink);
+}
+
+.urna-corpo {
+  font-size: var(--urna-txt-corpo);
+  line-height: 1.5;
+  color: var(--color-text);
+}
+
+.urna-apoio {
+  font-size: var(--urna-txt-apoio);
+  font-weight: 500;
+  line-height: 1.45;
+  color: var(--color-text-muted);
+}
+
+/* --------------------------------------------------------------- botões */
+
+.botao-urna {
+  width: 100%;
+  min-height: var(--urna-alvo-primario);
+  padding: 0 var(--space-5);
+  border-radius: var(--radius-md);
+  font: inherit;
+  font-size: var(--urna-txt-nome);
+  font-weight: 700;
+  cursor: pointer;
+  background: var(--color-primary);
+  border: 1px solid var(--color-primary);
+  color: #fff;
+}
+
+.botao-urna:hover:not(:disabled) {
+  background: var(--color-primary-hover);
+  border-color: var(--color-primary-hover);
+}
+
+.botao-urna-decisivo { min-height: var(--urna-alvo-decisivo); }
+
+.botao-urna-secundario {
+  background: transparent;
+  border: 1px solid var(--color-border-strong);
+  color: var(--color-ink);
+  min-height: var(--urna-alvo-min);
+}
+
+.botao-urna-secundario:hover:not(:disabled) { background: var(--color-surface-alt); }
+
+/* Desabilitado nunca comunica só por cor — vem sempre com texto de apoio ao lado. */
+.botao-urna:disabled {
+  background: var(--color-disabled-bg);
+  border-color: var(--color-border);
+  color: var(--color-disabled-text-strong);
+  cursor: default;
+}
+
+/* ------------------------------------------------------- teclado próprio */
+/*
+  Teclado do app, não o do sistema: o do SO é pequeno, muda de aparelho para aparelho e
+  abre sugestão e emoji. Aqui são 12 teclas grandes e previsíveis.
+*/
+
+.visor-cpf {
+  min-height: 72px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--radius-md);
+  background: var(--color-surface-alt);
+  font-size: var(--urna-txt-destaque);
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  color: var(--color-ink);
+}
+
+.visor-cpf-vazio { color: var(--color-text-muted); font-weight: 500; letter-spacing: 0; }
+
+.teclado {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-3);
+}
+
+.tecla {
+  min-height: var(--urna-alvo-min);
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+  font: inherit;
+  font-size: var(--urna-txt-destaque);
+  font-weight: 700;
+  color: var(--color-ink);
+  cursor: pointer;
+}
+
+.tecla:active { background: var(--color-surface-alt); }
+.tecla-apagar { font-size: var(--urna-txt-apoio); font-weight: 600; }
+
+/* ------------------------------------------------------------- candidato */
+/*
+  Por que não reusar .slot: ele tem 52px (metade do necessário), pinta o selecionado de
+  verde de marca — que aqui está reservado à ação primária — e foi feito para grade densa,
+  não para escolha única entre nomes.
+  O estado escolhido usa TRÊS sinais redundantes (borda grossa, fundo e rótulo textual),
+  nunca cor sozinha.
+*/
+
+.lista-candidatos {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.candidato {
+  width: 100%;
+  min-height: var(--urna-alvo-linha);
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  padding: var(--space-3) var(--space-4);
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.candidato-escolhido {
+  border: 3px solid var(--color-ink);
+  background: var(--color-surface-alt);
+  padding: calc(var(--space-3) - 2px) calc(var(--space-4) - 2px);
+}
+
+.candidato-numero {
+  flex: 0 0 64px;
+  height: 64px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-sm);
+  background: var(--color-surface-alt);
+  font-size: var(--urna-txt-destaque);
+  font-weight: 800;
+  color: var(--color-ink);
+}
+
+.candidato-escolhido .candidato-numero { background: var(--color-surface); }
+
+.candidato-dados { flex: 1; min-width: 0; }
+
+.candidato-nome {
+  display: block;
+  font-size: var(--urna-txt-nome);
+  font-weight: 700;
+  color: var(--color-ink);
+  line-height: 1.3;
+}
+
+/* --color-text-muted sobre --color-surface-alt fica abaixo de AA; por isso --color-text. */
+.candidato-setor {
+  display: block;
+  margin-top: var(--space-1);
+  font-size: var(--urna-txt-apoio);
+  font-weight: 500;
+  color: var(--color-text);
+}
+
+.candidato-marca {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: var(--urna-txt-micro);
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--color-ink);
+}
+
+/* Branco é visualmente diferente de candidato de propósito: não é uma pessoa. */
+.candidato-branco {
+  border-style: dashed;
+  min-height: var(--urna-alvo-min);
+}
+
+/* ------------------------------------------------------- barra de ação */
+
+.barra-acao {
+  position: sticky;
+  bottom: 0;
+  background: var(--color-surface);
+  border-top: 1px solid var(--color-border);
+  padding: var(--space-4) var(--urna-gutter);
+  margin: var(--space-4) calc(var(--urna-gutter) * -1) 0;
+}
+
+.barra-acao-dica {
+  text-align: center;
+  font-size: var(--urna-txt-apoio);
+  font-weight: 500;
+  color: var(--color-text-muted);
+  min-height: var(--urna-alvo-min);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ----------------------------------------------------------- resultado */
+
+.painel-sucesso {
+  background: var(--color-success-bg);
+  border: 1px solid var(--color-primary);
+  border-radius: var(--radius-lg);
+  padding: var(--space-6) var(--space-5);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.painel-neutro {
+  background: var(--color-surface-alt);
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--radius-lg);
+  padding: var(--space-6) var(--space-5);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.cartao-protocolo {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: var(--space-4);
+  text-align: center;
+}
+
+.codigo-protocolo {
+  font-size: var(--urna-txt-destaque);
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  color: var(--color-ink);
+  margin: var(--space-2) 0;
+}
+
+/* ------------------------------------------------------------- quórum */
+
+.barra-quorum {
+  position: relative;
+  height: var(--space-3);
+  border-radius: var(--radius-sm);
+  background: var(--color-border);
+  overflow: hidden;
+}
+
+.barra-quorum-preenchida {
+  height: 100%;
+  background: var(--color-primary);
+  border-radius: var(--radius-sm);
+}
+
+.marcadores-quorum {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  margin-top: var(--space-3);
+}
+
+.marcador-quorum {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: var(--urna-txt-apoio);
+  font-weight: 500;
+  color: var(--color-text);
+}
+
+/* --------------------------------------------------- lista da comissão */
+/* Em tablet estreito, tabela não cabe — vira lista de linhas com rótulo textual. */
+
+.linha-eleitor {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  min-height: var(--urna-alvo-min);
+  padding: var(--space-3) var(--space-4);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.linha-eleitor-dados { flex: 1; min-width: 0; }
+
+.linha-eleitor-nome {
+  display: block;
+  font-size: var(--urna-txt-apoio);
+  font-weight: 700;
+  color: var(--color-ink);
+}
+
+.selo-situacao {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  padding: var(--space-1) var(--space-3);
+  border-radius: 999px;
+  font-size: var(--urna-txt-micro);
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  border: 1px solid var(--color-border-strong);
+  color: var(--color-text);
+}
+
+.selo-votou {
+  background: var(--color-success-bg);
+  border-color: var(--color-primary);
+  color: var(--color-primary-hover);
+}
+
+.abas-lista { display: flex; gap: var(--space-3); flex-wrap: wrap; }
+
+.aba {
+  min-height: var(--urna-alvo-min);
+  padding: 0 var(--space-5);
+  border: 1px solid var(--color-border-strong);
+  border-radius: 999px;
+  background: var(--color-surface);
+  font: inherit;
+  font-weight: 600;
+  color: var(--color-ink);
+  cursor: pointer;
+}
+
+.aba-ativa {
+  background: var(--color-primary);
+  border-color: var(--color-primary);
+  color: #fff;
+}

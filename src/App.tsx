@@ -1,19 +1,18 @@
-import logo from './assets/logo-cbb.png'
+import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom'
+import UrnaPage from './pages/UrnaPage'
+import ComissaoPage from './pages/ComissaoPage'
 
-// Placeholder do passo 2 do plano: existe para fechar cedo o risco de deploy
-// (base do Vite x basename do Router x 404.html). As telas da urna entram no passo 4,
-// depois da especificação do cbb-ux-design.
+// O basename precisa casar com o `base` do vite.config.ts (lá com barra no fim, aqui sem) e
+// com o pathSegmentsToKeep do public/404.html. Os três discordando = página branca ou 404.
 export default function App() {
   return (
-    <div className="pagina-login">
-      <div className="cartao-login">
-        <img src={logo} alt="CBB Asfaltos" className="logo-login" width={1128} height={500} />
-        <h1>Eleição da CIPA</h1>
-        <p className="subtitulo">
-          O sistema de votação está sendo preparado. Quando a votação for aberta, esta página
-          passa a pedir o seu CPF.
-        </p>
-      </div>
-    </div>
+    <BrowserRouter basename="/cbb-votacao-cipa">
+      <Routes>
+        {/* Cada eleição tem seu slug. O tablet abre direto na urna certa. */}
+        <Route path="/:slug" element={<UrnaPage />} />
+        <Route path="/:slug/comissao" element={<ComissaoPage />} />
+        <Route path="*" element={<Navigate to="/cipa-2026" replace />} />
+      </Routes>
+    </BrowserRouter>
   )
 }

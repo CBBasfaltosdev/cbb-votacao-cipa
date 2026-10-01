@@ -1,0 +1,297 @@
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { Link, useParams } from 'react-router-dom'
+import logo from '../assets/logo-cbb.png'
+import {
+  entrarComoComissao,
+  listaEleitores,
+  painel,
+  sair,
+  sessaoAtiva,
+  type EleitorNaLista,
+  type PainelQuorum,
+} from '../lib/cipaService'
+import { formatarDataHora } from '../lib/cpf'
+
+/*
+  Tela de trabalho do Rogério, usada no mesmo tablet entre uma rodada e outra.
+
+  Duas abas, e a padrão é "Faltam" de propósito: o trabalho dele durante a votação é ir atrás
+  de quem ainda não votou, não admirar quem já votou.
+
+  Nenhuma contagem por candidato aparece aqui. Mostrar parcial durante a votação influenciaria
+  a eleição em curso — a apuração é ato formal, acompanhado, depois do encerramento (NR-5 5.5.3-i).
+*/
+
+type Aba = 'faltam' | 'votaram'
+
+export default function ComissaoPage() {
+  const { slug = '' } = useParams()
+
+  const [autenticado, setAutenticado] = useState<boolean | null>(null)
+  const [quorum, setQuorum] = useState<PainelQuorum | null>(null)
+  const [semAcesso, setSemAcesso] = useState(false)
+  const [eleitores, setEleitores] = useState<EleitorNaLista[]>([])
+  const [aba, setAba] = useState<Aba>('faltam')
+  const [filtro, setFiltro] = useState('')
+  const [erro, setErro] = useState<string | null>(null)
+  const [carregando, setCarregando] = useState(false)
+
+  // Só a resposta mais recente pode aplicar o resultado: o auto-refresh de 30s e um toque
+  // manual em "Atualizar" podem estar em voo ao mesmo tempo.
+  const chamadaAtualRef = useRef(0)
+
+  const carregar = useCallback(async () => {
+    const chamada = ++chamadaAtualRef.current
+    setCarregando(true)
+    setErro(null)
+    try {
+      const p = await painel(slug)
+      if (chamada !== chamadaAtualRef.current) return
+
+      if (p === 'sem_acesso') {
+        setSemAcesso(true)
+        return
+      }
+      if (p === null) {
+        setErro('Não foi possível carregar o painel.')
+        return
+      }
+      setQuorum(p)
+
+      const lista = await listaEleitores(slug)
+      if (chamada !== chamadaAtualRef.current) return
+      setEleitores(lista)
+    } catch {
+      if (chamada === chamadaAtualRef.current) setErro('Não foi possível carregar a lista.')
+    } finally {
+      if (chamada === chamadaAtualRef.current) setCarregando(false)
+    }
+  }, [slug])
+
+  useEffect(() => {
+    sessaoAtiva().then((ativa) => {
+      setAutenticado(ativa)
+      if (ativa) carregar()
+    })
+  }, [carregar])
+
+  useEffect(() => {
+    if (!autenticado || semAcesso) return
+    const t = window.setInterval(carregar, 30_000)
+    return () => window.clearInterval(t)
+  }, [autenticado, semAcesso, carregar])
+
+  const aptos = useMemo(() => eleitores.filter((e) => e.apto), [eleitores])
+  const votaram = useMemo(() => aptos.filter((e) => e.votou), [aptos])
+  const faltam = useMemo(() => aptos.filter((e) => !e.votou), [aptos])
+
+  const visiveis = useMemo(() => {
+    const base = aba === 'faltam' ? faltam : votaram
+    const termo = filtro.trim().toLowerCase()
+    if (!termo) return base
+    return base.filter(
+      (e) =>
+        e.nome.toLowerCase().includes(termo) ||
+        e.matricula.toLowerCase().includes(termo) ||
+        (e.setor ?? '').toLowerCase().includes(termo)
+    )
+  }, [aba, faltam, votaram, filtro])
+
+  if (autenticado === null) return <p className="mensagem">Carregando…</p>
+
+  if (!autenticado) {
+    return <LoginComissao onEntrou={() => { setAutenticado(true); carregar() }} />
+  }
+
+  if (semAcesso) {
+    return (
+      <div className="pagina-evento">
+        <h1>Acesso restrito</h1>
+        <p className="descricao">
+          Esta conta não faz parte da comissão eleitoral desta eleição. Fale com a TI se isso
+          estiver errado.
+        </p>
+        <button
+          type="button"
+          className="botao-secundario"
+          onClick={() => sair().then(() => setAutenticado(false))}
+        >
+          Sair
+        </button>
+      </div>
+    )
+  }
+
+  return (
+    <div className="pagina-evento">
+      <Link to={`/${slug}`} className="voltar sem-impressao">
+        ← Voltar para a urna
+      </Link>
+      <h1>{quorum?.nome ?? 'Eleição da CIPA'}</h1>
+
+      {erro && <p className="mensagem erro">{erro}</p>}
+
+      {quorum && (
+        <>
+          <section className="sem-impressao" aria-label="Participação">
+            <p className="urna-micro">Participação</p>
+            <p className="urna-destaque">
+              {quorum.votantes} <span className="urna-apoio">de {aptos.length || quorum.aptos} aptos</span>
+            </p>
+            <div className="barra-quorum">
+              <div
+                className="barra-quorum-preenchida"
+                style={{ width: `${Math.min(quorum.percentual, 100)}%` }}
+              />
+            </div>
+            <p className="urna-apoio">{quorum.percentual.toLocaleString('pt-BR')}% dos aptos</p>
+
+            {/*
+              A NR-5 (5.5.4 e 5.5.4.1) não tem um limite só: é uma escada por dia de votação.
+              1º dia vale com metade; se não atingir, prorroga para o dia seguinte somando os
+              votos já dados e passa a valer com um terço; no 3º dia vale com qualquer número.
+              Por isso os dois marcadores aparecem com o significado escrito ao lado.
+            */}
+            <div className="marcadores-quorum">
+              <p className="marcador-quorum">
+                {quorum.atingiuMetade ? '✓' : '○'} Metade dos aptos — mínimo para apurar no 1º dia
+              </p>
+              <p className="marcador-quorum">
+                {quorum.atingiuUmTerco ? '✓' : '○'} Um terço — mínimo no 2º dia, se houver prorrogação
+              </p>
+            </div>
+
+            <div className="alerta-pagina">
+              Esta tela não mostra votos por candidato. A contagem só existe depois de encerrar a
+              urna.
+            </div>
+
+            <button type="button" className="botao-secundario" onClick={carregar} disabled={carregando}>
+              {carregando ? 'Atualizando…' : 'Atualizar'}
+            </button>
+          </section>
+
+          <div className="cabecalho-lista sem-impressao">
+            <div className="abas-lista">
+              <button
+                type="button"
+                className={`aba ${aba === 'faltam' ? 'aba-ativa' : ''}`}
+                onClick={() => setAba('faltam')}
+              >
+                Faltam ({faltam.length})
+              </button>
+              <button
+                type="button"
+                className={`aba ${aba === 'votaram' ? 'aba-ativa' : ''}`}
+                onClick={() => setAba('votaram')}
+              >
+                Já votaram ({votaram.length})
+              </button>
+            </div>
+            <button type="button" className="botao-secundario" onClick={() => window.print()}>
+              Imprimir lista
+            </button>
+          </div>
+
+          {/* Cabeçalho que só existe no papel — vira anexo da ata. */}
+          <div className="apenas-impressao">
+            <p className="data-evento">
+              {quorum.nome} — lista de presença — {aptos.length} aptos, {votaram.length} votaram (
+              {quorum.percentual.toLocaleString('pt-BR')}%) — impresso em{' '}
+              {new Date().toLocaleString('pt-BR')}
+            </p>
+          </div>
+
+          <label className="campo-busca sem-impressao">
+            Buscar por nome, matrícula ou setor
+            <input value={filtro} onChange={(e) => setFiltro(e.target.value)} placeholder="Buscar…" />
+          </label>
+
+          <div className="tabela-scroll">
+            {visiveis.map((e) => (
+              <div className="linha-eleitor" key={e.matricula}>
+                <span className="linha-eleitor-dados">
+                  <span className="linha-eleitor-nome">{e.nome}</span>
+                  <span className="urna-micro">
+                    {[e.setor, e.matricula].filter(Boolean).join(' · ')}
+                  </span>
+                </span>
+                <span className={`selo-situacao ${e.votou ? 'selo-votou' : ''}`}>
+                  {e.votou ? `✓ Votou ${formatarDataHora(e.votouEm).split('às')[1]?.trim() ?? ''}` : 'Falta'}
+                </span>
+              </div>
+            ))}
+            {visiveis.length === 0 && (
+              <p className="estado-vazio">
+                {aba === 'faltam'
+                  ? filtro
+                    ? 'Nenhum nome encontrado.'
+                    : 'Todo mundo já votou.'
+                  : 'Ninguém votou ainda.'}
+              </p>
+            )}
+          </div>
+
+          <button
+            type="button"
+            className="botao-texto sem-impressao"
+            onClick={() => sair().then(() => setAutenticado(false))}
+          >
+            Sair da conta da comissão
+          </button>
+        </>
+      )}
+    </div>
+  )
+}
+
+function LoginComissao({ onEntrou }: { onEntrou: () => void }) {
+  const [email, setEmail] = useState('')
+  const [senha, setSenha] = useState('')
+  const [erro, setErro] = useState<string | null>(null)
+  const [enviando, setEnviando] = useState(false)
+
+  async function enviar(ev: React.FormEvent) {
+    ev.preventDefault()
+    setErro(null)
+    if (!email.trim() || !senha) {
+      setErro('Preencha e-mail e senha.')
+      return
+    }
+    setEnviando(true)
+    try {
+      await entrarComoComissao(email, senha)
+      onEntrou()
+    } catch {
+      setErro('E-mail ou senha incorretos.')
+    } finally {
+      setEnviando(false)
+    }
+  }
+
+  return (
+    <div className="pagina-login">
+      <div className="cartao-login">
+        <img src={logo} alt="CBB Asfaltos" className="logo-login" width={1128} height={500} />
+        <form onSubmit={enviar}>
+          <h1>Comissão eleitoral</h1>
+          <p className="subtitulo">
+            Acesso restrito a quem organiza a eleição. Não é por aqui que se vota.
+          </p>
+          <label>
+            E-mail
+            <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} autoFocus />
+          </label>
+          <label>
+            Senha
+            <input type="password" value={senha} onChange={(e) => setSenha(e.target.value)} />
+          </label>
+          {erro && <p className="mensagem erro">{erro}</p>}
+          <button type="submit" className="botao-primario botao-bloco" disabled={enviando}>
+            {enviando ? 'Entrando…' : 'Entrar'}
+          </button>
+        </form>
+      </div>
+    </div>
+  )
+}
