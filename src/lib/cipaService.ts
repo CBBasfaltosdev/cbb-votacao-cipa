@@ -205,6 +205,8 @@ export type LinhaPlacar = {
   votos: number
   /** false = saiu da disputa, mas aparece porque recebeu votos antes de sair */
   ativo: boolean
+  /** funcao indicada pela comissao (nao e resultado de voto) */
+  funcao: string | null
 }
 
 export type Parcial = {
@@ -216,6 +218,7 @@ export type Parcial = {
   vagasSuplentes: number
   totalVotos: number
   brancos: number
+  aptos: number
   placar: LinhaPlacar[]
 }
 
@@ -233,6 +236,7 @@ export async function parcial(slug: string): Promise<Parcial | null> {
     vagasSuplentes: (r.vagas_suplentes as number) ?? 1,
     totalVotos: (r.total_votos as number) ?? 0,
     brancos: (r.brancos as number) ?? 0,
+    aptos: (r.aptos as number) ?? 0,
     placar: ((r.placar as Record<string, unknown>[]) ?? []).map((l) => ({
       numero: (l.numero as number) ?? null,
       nome: l.nome as string,
@@ -240,6 +244,7 @@ export async function parcial(slug: string): Promise<Parcial | null> {
       foto: (l.foto as string) ?? null,
       votos: (l.votos as number) ?? 0,
       ativo: l.ativo !== false,
+      funcao: (l.funcao as string) ?? null,
     })),
   }
 }

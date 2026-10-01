@@ -158,7 +158,7 @@ export default function UrnaPage() {
     <div className="urna-pagina">
       <div className="faixa-marca" aria-hidden="true" />
       <div className="urna-conteudo">
-        <img src={logo} alt="CBB Asfaltos" className="logo-login" width={1128} height={500} />
+        <img src={logo} alt="cbb Asfaltos" className="logo-login" width={1128} height={500} />
 
         {etapa === 'repouso' && (
           <>

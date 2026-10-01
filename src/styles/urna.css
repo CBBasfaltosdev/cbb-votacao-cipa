@@ -564,3 +564,25 @@
 }
 
 .selo-eleito { background: var(--color-primary); border-color: var(--color-primary); color: #fff; }
+
+
+/* No papel, o resultado sai como folha limpa: so o cabecalho e a tabela. */
+@media print {
+  .placar-lista, .secao-comissao { break-inside: avoid; }
+  body { background: #fff; }
+}
+
+@media print {
+  /* cada botao de imprimir mostra so a sua folha */
+  [data-impressao='resultado'] .folha-lista,
+  [data-impressao='resultado'] .tabela-scroll,
+  [data-impressao='lista'] .folha-resultado { display: none !important; }
+}
+
+.folha-logo { height: 56px; width: auto; display: block; margin: 0 0 var(--space-4); }
+.folha-titulo { margin: 0 0 var(--space-2); }
+@media print {
+  /* na folha de resultado o cabecalho da pagina (nome da eleicao em h1) e redundante */
+  [data-impressao='resultado'] > h1 { display: none !important; }
+  .folha-resultado .tabela-admin th, .folha-resultado .tabela-admin td { white-space: normal; }
+}

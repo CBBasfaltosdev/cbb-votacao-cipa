@@ -35,6 +35,7 @@ export default function ComissaoPage() {
   const [eleitores, setEleitores] = useState<EleitorNaLista[]>([])
   const [placar, setPlacar] = useState<Parcial | null>(null)
   const [aba, setAba] = useState<Aba>('faltam')
+  const [modoImpressao, setModoImpressao] = useState<'lista' | 'resultado'>('lista')
   const [filtro, setFiltro] = useState('')
   const [erro, setErro] = useState<string | null>(null)
   const [carregando, setCarregando] = useState(false)
@@ -88,6 +89,12 @@ export default function ComissaoPage() {
     return () => window.clearInterval(t)
   }, [autenticado, semAcesso, carregar])
 
+  function imprimir(modo: 'lista' | 'resultado') {
+    setModoImpressao(modo)
+    // espera o React aplicar o atributo antes de abrir a janela de impressao
+    window.setTimeout(() => window.print(), 80)
+  }
+
   const aptos = useMemo(() => eleitores.filter((e) => e.apto), [eleitores])
   const votaram = useMemo(() => aptos.filter((e) => e.votou), [aptos])
   const faltam = useMemo(() => aptos.filter((e) => !e.votou), [aptos])
@@ -130,7 +137,7 @@ export default function ComissaoPage() {
   }
 
   return (
-    <div className="pagina-evento">
+    <div className="pagina-evento" data-impressao={modoImpressao}>
       <Link to={`/${slug}`} className="voltar sem-impressao">
         ← Voltar para a urna
       </Link>
@@ -176,7 +183,8 @@ export default function ComissaoPage() {
             </div>
           </section>
 
-          {placar && <Placar dados={placar} />}
+          {placar && <Placar dados={placar} onImprimir={() => imprimir('resultado')} />}
+          {placar && placar.encerrada && <FolhaResultado dados={placar} />}
 
           <section className="secao-comissao sem-impressao" aria-label="Lista de presença">
             <p className="urna-micro">Lista de presença</p>
@@ -198,7 +206,7 @@ export default function ComissaoPage() {
               <button
                 type="button"
                 className="botao-secundario empurra"
-                onClick={() => window.print()}
+                onClick={() => imprimir('lista')}
               >
                 Imprimir lista
               </button>
@@ -206,7 +214,7 @@ export default function ComissaoPage() {
           </section>
 
           {/* Cabeçalho que só existe no papel — vira anexo da ata. */}
-          <div className="apenas-impressao">
+          <div className="apenas-impressao folha-lista">
             <p className="data-evento">
               {quorum.nome} — lista de presença — {aptos.length} aptos, {votaram.length} votaram (
               {quorum.percentual.toLocaleString('pt-BR')}%) — impresso em{' '}
@@ -284,7 +292,7 @@ function LoginComissao({ onEntrou }: { onEntrou: () => void }) {
   return (
     <div className="pagina-login">
       <div className="cartao-login">
-        <img src={logo} alt="CBB Asfaltos" className="logo-login" width={1128} height={500} />
+        <img src={logo} alt="cbb Asfaltos" className="logo-login" width={1128} height={500} />
         <form onSubmit={enviar}>
           <h1>Comissão eleitoral</h1>
           <p className="subtitulo">
@@ -317,7 +325,7 @@ function LoginComissao({ onEntrou }: { onEntrou: () => void }) {
   o que está vendo e registre em ata. O sigilo individual continua intacto: isto é contagem
   agregada, não existe como ligar um voto a um eleitor.
 */
-function Placar({ dados }: { dados: Parcial }) {
+function Placar({ dados, onImprimir }: { dados: Parcial; onImprimir: () => void }) {
   const vagas = dados.vagasEfetivos + dados.vagasSuplentes
   const houveVoto = dados.totalVotos > 0
   const lider = dados.placar[0]
@@ -325,7 +333,7 @@ function Placar({ dados }: { dados: Parcial }) {
     houveVoto && dados.placar.filter((l) => l.votos === lider?.votos).length > 1
 
   return (
-    <section className="secao-comissao" aria-label="Apuração parcial">
+    <section className="secao-comissao sem-impressao" aria-label="Apuração parcial">
       <p className="urna-micro">
         {dados.encerrada ? 'Resultado' : 'Parcial — votação em andamento'}
       </p>
@@ -385,6 +393,7 @@ function Placar({ dados }: { dados: Parcial }) {
                     {eleito && <span className="selo-posicao selo-eleito">Eleito</span>}
                     {suplente && <span className="selo-posicao">Suplente</span>}
                     {!l.ativo && <span className="selo-posicao">Fora da disputa</span>}
+                    {l.funcao && <span className="selo-posicao">Função: {l.funcao}</span>}
                   </span>
                   <span className="placar-votos">
                     <span className="placar-numero-votos">{l.votos}</span>
@@ -395,8 +404,16 @@ function Placar({ dados }: { dados: Parcial }) {
             })}
           </ul>
 
+          {dados.encerrada && (
+            <div className="acoes-comissao sem-impressao">
+              <button type="button" className="botao-urna botao-urna-secundario" onClick={onImprimir}>
+                Imprimir resultado / salvar em PDF
+              </button>
+            </div>
+          )}
+
           {dados.encerrada && !dados.urnaFechada && (
-            <div className="alerta-pagina erro">
+            <div className="alerta-pagina erro sem-impressao">
               A urna ainda não foi fechada. Antes de divulgar o resultado, a comissão precisa
               executar o fechamento — é o que embaralha os votos registrados e impede reconstruir
               a ordem em que foram dados.
@@ -404,6 +421,76 @@ function Placar({ dados }: { dados: Parcial }) {
           )}
         </>
       )}
+    </section>
+  )
+}
+
+
+/*
+  Folha de resultado para postar (mural, intranet ou PDF). Só aparece depois do encerramento
+  e só no papel — na tela o painel acima já mostra a mesma informação.
+
+  Duas colunas SEPARADAS de propósito: "votos" é o resultado da votação; "função" é a
+  indicação da comissão. Pela NR-5 (5.4.5) o vice-presidente é escolhido pelos titulares
+  eleitos entre si, não sai de voto — misturar as duas coisas na mesma coluna faria o papel
+  afirmar que o voto elegeu um cargo que ele não elege.
+*/
+function FolhaResultado({ dados }: { dados: Parcial }) {
+  const linhas = dados.placar.filter((l) => l.votos > 0 || l.ativo)
+
+  // Posição por votos, com empate: quem tem a mesma votação ocupa a mesma posição. Mostrar
+  // "1º" e "2º" para quem empatou faria o mural afirmar que um venceu o outro.
+  const posicoes = linhas.map((l) => linhas.findIndex((x) => x.votos === l.votos) + 1)
+  const temEmpate = new Set(posicoes).size < linhas.length
+  const pct = (v: number) =>
+    dados.totalVotos > 0
+      ? ((v * 100) / dados.totalVotos).toLocaleString('pt-BR', { maximumFractionDigits: 1 })
+      : '0'
+
+  return (
+    <section className="apenas-impressao folha-resultado" aria-label="Resultado para publicação">
+      <img src={logo} alt="cbb Asfaltos" className="folha-logo" />
+      <h2 className="folha-titulo">{dados.nome} — Resultado</h2>
+      <p className="data-evento">
+        cbb Asfaltos — Curitiba/PR · {dados.totalVotos} votos apurados de {dados.aptos} eleitores
+        aptos ({dados.aptos > 0 ? ((dados.totalVotos * 100) / dados.aptos).toLocaleString('pt-BR', { maximumFractionDigits: 1 }) : 0}% de participação)
+      </p>
+      <table className="tabela-admin">
+        <thead>
+          <tr>
+            <th>Posição</th>
+            <th>Nº</th>
+            <th>Candidato</th>
+            <th>Setor</th>
+            <th>Votos</th>
+            <th>%</th>
+            <th>Função indicada pela comissão</th>
+          </tr>
+        </thead>
+        <tbody>
+          {linhas.map((l, i) => (
+            <tr key={l.numero ?? l.nome}>
+              <td>{posicoes[i]}º{posicoes.filter((x) => x === posicoes[i]).length > 1 ? ' (empate)' : ''}</td>
+              <td>{l.numero ?? '—'}</td>
+              <td>{l.nome}</td>
+              <td>{l.setor ?? '—'}</td>
+              <td>{l.votos}</td>
+              <td>{pct(l.votos)}%</td>
+              <td>{l.funcao ?? '—'}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+      {temEmpate && (
+        <p className="urna-apoio">
+          Candidatos com a mesma votação ocupam a mesma posição; dentro do empate, a ordem da
+          tabela segue o número do candidato e não indica preferência.
+        </p>
+      )}
+      <p className="urna-apoio">
+        As funções indicadas pela comissão não decorrem do número de votos. Resultado gerado em{' '}
+        {new Date().toLocaleString('pt-BR')}.
+      </p>
     </section>
   )
 }
