@@ -3,6 +3,7 @@ import { Link, useParams } from 'react-router-dom'
 import logo from '../assets/logo-cbb.png'
 import { identificar, votar, type Identificacao, type MotivoVoto } from '../lib/cipaService'
 import { apenasDigitos, cpfValido, formatarDataHora, mascararCpf } from '../lib/cpf'
+import { tocarConfirmacao } from '../lib/som'
 
 /*
   Máquina de estados da urna. Duas pessoas usam o mesmo tablet em sequência:
@@ -147,6 +148,7 @@ export default function UrnaPage() {
       return
     }
 
+    tocarConfirmacao()
     setComprovante({ protocolo: r.protocolo, votouEm: r.votouEm })
     setCpf('') // o CPF não fica em memória depois do voto
     setEtapa('comprovante')
@@ -278,7 +280,7 @@ export default function UrnaPage() {
               Em quem você quer votar?
             </h1>
             <p className="urna-corpo">Toque no nome da pessoa. Você escolhe só uma.</p>
-            {pessoa.candidatos.length > 4 && (
+            {pessoa.candidatos.length > 6 && (
               <p className="urna-apoio">
                 São {pessoa.candidatos.length} nomes. Role a tela para ver todos.
               </p>
@@ -298,20 +300,20 @@ export default function UrnaPage() {
                       className={`candidato ${ativo ? 'candidato-escolhido' : ''}`}
                       onClick={() => setEscolhido(ativo ? null : c.id)}
                     >
-                      {c.numero !== null && <span className="candidato-numero">{c.numero}</span>}
                       {c.foto && (
                         <img
                           className="candidato-foto"
                           src={`${import.meta.env.BASE_URL}candidatos/${c.foto}`}
                           alt=""
-                          width={72}
-                          height={72}
+                          width={104}
+                          height={104}
                           loading="eager"
                         />
                       )}
                       <span className="candidato-dados">
+                        {c.numero !== null && <span className="candidato-numero">{c.numero}</span>}
                         <span className="candidato-nome">{c.nome}</span>
-                        {c.setor && <span className="candidato-setor"> {c.setor}</span>}
+                        {c.setor && <span className="candidato-setor">{c.setor}</span>}
                       </span>
                       {ativo && <span className="candidato-marca">✓ Escolhido</span>}
                     </button>

@@ -193,13 +193,22 @@
   nunca cor sozinha.
 */
 
+/*
+  Grade de candidatos (pedido do Rogerio). Duas colunas no celular, tres a partir de tablet.
+  A foto manda na leitura: quem vota reconhece o rosto do colega antes de ler o nome, entao
+  ela vem grande e em cima, com numero e nome embaixo.
+*/
 .lista-candidatos {
-  display: flex;
-  flex-direction: column;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
   gap: var(--space-3);
   margin: 0;
   padding: 0;
   list-style: none;
+}
+
+@media (min-width: 700px) {
+  .lista-candidatos { grid-template-columns: repeat(3, 1fr); gap: var(--space-4); }
 }
 
 /*
@@ -212,34 +221,32 @@
 
 .candidato {
   width: 100%;
-  min-height: var(--urna-alvo-linha);
+  height: 100%;
   display: flex;
+  flex-direction: column;
   align-items: center;
-  gap: var(--space-4);
-  padding: var(--space-3) var(--space-4);
+  gap: var(--space-2);
+  padding: var(--space-4) var(--space-3);
   border: 1px solid var(--color-border-strong);
   border-radius: var(--radius-md);
   background: var(--color-surface);
   font: inherit;
-  text-align: left;
+  text-align: center;
   cursor: pointer;
 }
 
 .candidato-escolhido {
   border: 3px solid var(--color-ink);
   background: var(--color-surface-alt);
-  padding: calc(var(--space-3) - 2px) calc(var(--space-4) - 2px);
+  padding: calc(var(--space-4) - 2px) calc(var(--space-3) - 2px);
 }
 
 .candidato-numero {
-  flex: 0 0 64px;
-  height: 64px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  min-width: 44px;
+  padding: 0 var(--space-2);
   border-radius: var(--radius-sm);
   background: var(--color-surface-alt);
-  font-size: var(--urna-txt-destaque);
+  font-size: var(--urna-txt-nome);
   font-weight: 800;
   color: var(--color-ink);
 }
@@ -248,14 +255,14 @@
 
 .candidato-foto {
   flex: 0 0 auto;
-  width: 72px;
-  height: 72px;
+  width: 104px;
+  height: 104px;
   border-radius: 50%;
   object-fit: cover;
   background: var(--color-surface-alt);
 }
 
-.candidato-dados { flex: 1; min-width: 0; }
+.candidato-dados { width: 100%; min-width: 0; }
 
 .candidato-nome {
   display: block;
@@ -277,6 +284,7 @@
 .candidato-marca {
   flex: 0 0 auto;
   display: flex;
+  justify-content: center;
   align-items: center;
   gap: var(--space-2);
   font-size: var(--urna-txt-micro);
