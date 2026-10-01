@@ -1,0 +1,804 @@
+.pagina-home,
+.pagina-evento {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: var(--space-6) var(--space-5) var(--space-8);
+  text-align: left;
+}
+
+.subtitulo {
+  color: var(--color-text-muted);
+  font-weight: 500;
+  margin-top: var(--space-2);
+  margin-bottom: var(--space-5);
+}
+
+.voltar {
+  display: inline-block;
+  color: var(--color-link);
+  text-decoration: none;
+  font-size: 0.875rem;
+  font-weight: 500;
+  margin-bottom: var(--space-4);
+}
+
+.mensagem {
+  padding: var(--space-6) var(--space-5);
+  color: var(--color-text-muted);
+  font-weight: 500;
+}
+
+.mensagem.erro {
+  color: var(--color-error);
+}
+
+/* ===== Home: lista de eventos ===== */
+
+.lista-eventos {
+  display: grid;
+  gap: var(--space-4);
+  margin-top: var(--space-4);
+}
+
+.card-evento {
+  display: block;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: var(--space-5);
+  text-decoration: none;
+  color: inherit;
+  transition: border-color 0.15s ease, background 0.15s ease;
+}
+
+.card-evento:hover {
+  border-color: var(--color-primary);
+  background: var(--color-primary-subtle);
+}
+
+.card-evento h2 {
+  margin-bottom: var(--space-2);
+}
+
+.card-evento p {
+  color: var(--color-text);
+}
+
+.data-card {
+  display: inline-block;
+  margin-top: var(--space-3);
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--color-text-muted);
+}
+
+/* ===== Evento: cabeçalho da página ===== */
+
+.descricao {
+  margin: var(--space-2) 0;
+  color: var(--color-text);
+}
+
+.data-evento {
+  font-weight: 600;
+  color: var(--color-ink);
+  margin-bottom: var(--space-5);
+}
+
+/* ===== Chips de período ===== */
+
+.chips-periodo {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  margin-bottom: var(--space-4);
+}
+
+.chip {
+  min-height: 44px;
+  border: 1px solid var(--color-border-strong);
+  background: var(--color-surface);
+  border-radius: 999px;
+  padding: var(--space-2) var(--space-4);
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--color-text);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.chip-ativo {
+  border-color: var(--color-primary);
+  background: var(--color-primary-subtle);
+  color: var(--color-primary);
+}
+
+.chip-contagem {
+  font-weight: 500;
+  color: var(--color-text-muted);
+  font-size: 0.75rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.chip-ativo .chip-contagem {
+  color: var(--color-primary);
+}
+
+.chip-esgotado {
+  color: var(--color-disabled-text-strong);
+}
+
+.chip:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 1px;
+}
+
+/* ===== Título de seção / alerta de página ===== */
+
+.titulo-secao {
+  font-size: 1rem;
+  color: var(--color-ink);
+  margin-bottom: var(--space-3);
+}
+
+.alerta-pagina {
+  border-radius: var(--radius-sm);
+  padding: var(--space-3) var(--space-4);
+  margin-bottom: var(--space-4);
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.alerta-admin {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  flex-wrap: wrap;
+}
+
+.alerta-admin .botao-texto {
+  flex-shrink: 0;
+  padding: 0;
+  min-height: auto;
+  text-decoration: underline;
+}
+
+.alerta-pagina.erro {
+  background: var(--color-error-bg);
+  color: var(--color-error);
+  border-left: 3px solid var(--color-error);
+}
+
+/* ===== "Minha reserva" (cartão + selo na linha) ===== */
+
+.cartao-minha-reserva {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  background: var(--color-success-bg);
+  border: 1px solid var(--color-primary);
+  border-radius: var(--radius-md);
+  padding: var(--space-4);
+  margin-bottom: var(--space-5);
+}
+
+.cartao-minha-reserva strong {
+  color: var(--color-ink);
+}
+
+.selo-minha-reserva {
+  background: var(--color-primary);
+  color: #fff;
+  font-size: 0.75rem;
+  font-weight: 700;
+  border-radius: 999px;
+  padding: var(--space-1) var(--space-3);
+}
+
+/* ===== Lista de horários (usada em Meus Agendamentos) ===== */
+
+.lista-horarios {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+}
+
+.lista-horarios li + li {
+  border-top: 1px solid var(--color-border);
+}
+
+.hora {
+  font-weight: 600;
+  color: var(--color-ink);
+  font-variant-numeric: tabular-nums;
+}
+
+.status-horario {
+  color: var(--color-text-muted);
+  font-size: 0.875rem;
+}
+
+/* ===== Grade de horários (tela de reservar) ===== */
+
+.ajuda-secao {
+  margin: calc(-1 * var(--space-2)) 0 var(--space-4);
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: var(--color-text-muted);
+}
+
+.grade-horarios {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(88px, 1fr));
+  gap: var(--space-2);
+}
+
+@media (min-width: 600px) {
+  .grade-horarios {
+    grid-template-columns: repeat(auto-fill, minmax(96px, 1fr));
+    gap: var(--space-3);
+  }
+}
+
+.slot {
+  min-height: 52px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  padding: var(--space-2) var(--space-1);
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--radius-sm);
+  background: var(--color-surface);
+  color: var(--color-ink);
+  font: inherit;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  line-height: 1.2;
+  cursor: pointer;
+}
+
+.slot-nota {
+  font-size: 0.6875rem;
+  font-weight: 600;
+  color: var(--color-text-muted);
+}
+
+.slot:hover:not(:disabled) {
+  border-color: var(--color-primary);
+  background: var(--color-primary-subtle);
+  color: var(--color-primary);
+}
+
+.slot:active:not(:disabled) {
+  background: var(--color-success-bg);
+}
+
+.slot:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+.slot-ultima .slot-nota {
+  color: var(--color-warning-text);
+}
+
+.slot-minha {
+  background: var(--color-success-bg);
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+  cursor: default;
+}
+
+.slot-minha .slot-nota {
+  color: var(--color-primary);
+}
+
+.slot-esgotado {
+  background: var(--color-disabled-bg);
+  border-color: var(--color-border);
+  color: var(--color-disabled-text-strong);
+  cursor: not-allowed;
+}
+
+.slot-esgotado .slot-hora {
+  text-decoration: line-through;
+  text-decoration-thickness: 1px;
+}
+
+.slot-esqueleto {
+  background: var(--color-surface-alt);
+  border-style: dashed;
+  animation: pulso 1.4s ease-in-out infinite;
+}
+
+@keyframes pulso {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+.legenda-horarios {
+  list-style: none;
+  margin: var(--space-3) 0 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2) var(--space-4);
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--color-text-muted);
+}
+
+.legenda-horarios li {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.amostra {
+  width: 12px;
+  height: 12px;
+  border-radius: 3px;
+  border: 1px solid var(--color-border-strong);
+}
+
+.amostra-livre {
+  background: var(--color-surface);
+}
+
+.amostra-minha {
+  background: var(--color-success-bg);
+  border-color: var(--color-primary);
+}
+
+.amostra-esgotado {
+  background: var(--color-disabled-bg);
+  border-color: var(--color-border);
+}
+
+/* ===== Modal ===== */
+
+.modal-fundo {
+  position: fixed;
+  inset: 0;
+  background: rgba(55, 52, 53, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-4);
+  z-index: 10;
+}
+
+.modal {
+  background: var(--color-surface);
+  border-radius: var(--radius-lg);
+  padding: var(--space-6);
+  width: 100%;
+  max-width: 440px;
+  box-shadow: var(--shadow-modal);
+  text-align: left;
+}
+
+.passo {
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+  margin-bottom: var(--space-2);
+}
+
+.modal h2 {
+  margin-bottom: var(--space-2);
+}
+
+.resumo-horario {
+  color: var(--color-text);
+  margin-bottom: var(--space-2);
+}
+
+.resumo-reserva {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: var(--space-2) var(--space-4);
+  margin: var(--space-4) 0;
+}
+
+.resumo-reserva dt {
+  color: var(--color-text-muted);
+  font-size: 0.8125rem;
+}
+
+.resumo-reserva dd {
+  margin: 0;
+  color: var(--color-ink);
+  font-weight: 600;
+  text-align: right;
+}
+
+.aviso-modal {
+  background: var(--color-warning-bg);
+  color: var(--color-warning-text);
+  border-radius: var(--radius-sm);
+  padding: var(--space-3);
+  font-size: 0.875rem;
+  margin-bottom: var(--space-2);
+}
+
+.modal label {
+  display: block;
+  margin-top: var(--space-4);
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--color-ink);
+}
+
+.modal input {
+  display: block;
+  width: 100%;
+  min-height: 44px;
+  margin-top: var(--space-2);
+  padding: 0 var(--space-3);
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--radius-sm);
+  font: inherit;
+  box-sizing: border-box;
+}
+
+.modal input:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 1px;
+}
+
+.icone-sucesso {
+  width: 48px;
+  height: 48px;
+  border-radius: 999px;
+  background: var(--color-success-bg);
+  color: var(--color-success);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: var(--space-4);
+}
+
+.acoes-modal {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: var(--space-4);
+  margin-top: var(--space-6);
+}
+
+.botao-primario,
+.botao-texto {
+  min-height: 44px;
+  padding: 0 var(--space-5);
+  border-radius: var(--radius-sm);
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.botao-primario {
+  background: var(--color-primary);
+  border: 1px solid var(--color-primary);
+  color: #fff;
+}
+
+.botao-primario:hover:not(:disabled) {
+  background: var(--color-primary-hover);
+  border-color: var(--color-primary-hover);
+}
+
+.botao-secundario {
+  min-height: 44px;
+  padding: 0 var(--space-5);
+  border-radius: var(--radius-sm);
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+  background: transparent;
+  border: 1px solid var(--color-border-strong);
+  color: var(--color-ink);
+}
+
+.botao-secundario:hover:not(:disabled) {
+  background: var(--color-surface-alt);
+}
+
+.botao-texto {
+  background: transparent;
+  border: none;
+  color: var(--color-text-muted);
+  padding-inline: var(--space-2);
+  display: inline-flex;
+  align-items: center;
+  text-decoration: none;
+}
+
+.botao-texto:hover:not(:disabled) {
+  color: var(--color-ink);
+}
+
+.botao-primario:disabled,
+.botao-texto:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
+.botao-texto-perigo {
+  background: transparent;
+  border: none;
+  color: var(--color-error);
+  font: inherit;
+  font-weight: 600;
+  font-size: 0.875rem;
+  cursor: pointer;
+  padding-inline: var(--space-2);
+  min-height: 44px;
+}
+
+.botao-texto-perigo:hover:not(:disabled) {
+  text-decoration: underline;
+}
+
+.botao-texto-perigo:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
+/* ===== Meus agendamentos ===== */
+
+.linha-minha-reserva {
+  width: 100%;
+  min-height: 56px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  padding: var(--space-3) var(--space-4);
+}
+
+.acoes-linha {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.form-editar-nome {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin-bottom: var(--space-4);
+}
+
+.form-editar-nome input {
+  min-height: 44px;
+  padding: 0 var(--space-3);
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--radius-sm);
+  font: inherit;
+}
+
+@media (max-width: 600px) {
+  .modal-fundo {
+    align-items: flex-end;
+    padding: 0;
+  }
+
+  .modal {
+    max-width: none;
+    border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+    max-height: 85vh;
+    overflow-y: auto;
+  }
+}
+
+/* ===== Login (porta de entrada, antes de qualquer agendamento) ===== */
+
+.pagina-login {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-5);
+  background: var(--color-surface-alt);
+}
+
+.cartao-login {
+  width: 100%;
+  max-width: 420px;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: var(--space-7) var(--space-6) var(--space-6);
+  box-shadow: var(--shadow-modal);
+  text-align: left;
+}
+
+.logo-login {
+  height: 64px;
+  width: auto;
+  display: block;
+  margin: 0 auto var(--space-6);
+}
+
+@media (max-width: 600px) {
+  .logo-login {
+    height: 52px;
+    margin-bottom: var(--space-5);
+  }
+}
+
+.cartao-login h1 {
+  margin-top: var(--space-2);
+}
+
+.cartao-login .subtitulo {
+  margin-top: var(--space-2);
+  margin-bottom: 0;
+}
+
+.cartao-login label {
+  display: block;
+  margin-top: var(--space-4);
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--color-ink);
+}
+
+.cartao-login input {
+  display: block;
+  width: 100%;
+  min-height: 44px;
+  margin-top: var(--space-2);
+  padding: 0 var(--space-3);
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--radius-sm);
+  font: inherit;
+  box-sizing: border-box;
+}
+
+.cartao-login input:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 1px;
+}
+
+.botao-bloco {
+  display: block;
+  width: 100%;
+  margin-top: var(--space-6);
+}
+
+.botao-bloco-centro {
+  display: block;
+  width: 100%;
+  margin-top: var(--space-4);
+  text-align: center;
+}
+
+.acoes-login {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: var(--space-6);
+}
+
+/* ===== Painel admin ===== */
+
+.cabecalho-lista {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+  flex-wrap: wrap;
+}
+
+.apenas-impressao {
+  display: none;
+}
+
+.campo-busca {
+  display: block;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--color-ink);
+  margin: var(--space-4) 0;
+  max-width: 320px;
+}
+
+.campo-busca input {
+  display: block;
+  width: 100%;
+  min-height: 44px;
+  margin-top: var(--space-2);
+  padding: 0 var(--space-3);
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--radius-sm);
+  font: inherit;
+  box-sizing: border-box;
+}
+
+.tabela-scroll {
+  overflow-x: auto;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+}
+
+.tabela-admin {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.875rem;
+  min-width: 560px;
+}
+
+.tabela-admin th,
+.tabela-admin td {
+  text-align: left;
+  padding: var(--space-3) var(--space-4);
+  white-space: nowrap;
+}
+
+.tabela-admin th {
+  background: var(--color-surface-alt);
+  color: var(--color-text-muted);
+  font-weight: 600;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.tabela-admin tbody tr + tr {
+  border-top: 1px solid var(--color-border);
+}
+
+.tabela-admin td {
+  color: var(--color-ink);
+}
+
+.estado-vazio {
+  padding: var(--space-6);
+  text-align: center;
+  color: var(--color-text-muted);
+}
+
+/* ===== Impressão ===== */
+
+@media print {
+  .sem-impressao,
+  .cabecalho,
+  .faixa-marca {
+    display: none !important;
+  }
+
+  .apenas-impressao {
+    display: block;
+  }
+
+  .tabela-scroll {
+    border: none;
+    overflow: visible;
+  }
+
+  .tabela-admin {
+    min-width: 0;
+  }
+
+  .tabela-admin th,
+  .tabela-admin td {
+    white-space: normal;
+  }
+}

@@ -1,0 +1,102 @@
+.faixa-marca {
+  height: 4px;
+  background: linear-gradient(
+    90deg,
+    var(--cbb-amarelo),
+    var(--cbb-laranja),
+    var(--cbb-verde),
+    var(--cbb-azul)
+  );
+}
+
+.cabecalho {
+  position: sticky;
+  top: 0;
+  z-index: 5;
+  background: var(--color-surface);
+  border-bottom: 1px solid var(--color-border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 64px;
+  padding: 0 var(--space-5);
+}
+
+.area-colaborador {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.link-painel {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--color-link);
+  text-decoration: none;
+}
+
+.link-painel:hover {
+  color: var(--color-link-hover);
+}
+
+.nome-colaborador {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--color-text);
+  max-width: 22vw;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+@media (max-width: 640px) {
+  .nome-colaborador {
+    display: none;
+  }
+}
+
+.botao-sair {
+  min-height: 36px;
+  padding: 0 var(--space-3);
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--color-border-strong);
+  background: var(--color-surface);
+  color: var(--color-text-muted);
+  font: inherit;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.botao-sair:hover {
+  border-color: var(--color-border-strong);
+  color: var(--color-ink);
+  background: var(--color-surface-alt);
+}
+
+.logo-link {
+  display: flex;
+  align-items: center;
+  line-height: 0;
+}
+
+.logo-completo {
+  height: 32px;
+  width: auto;
+  display: block;
+}
+
+.logo-compacto {
+  height: 32px;
+  width: auto;
+  display: none;
+}
+
+@media (max-width: 480px) {
+  .logo-completo {
+    display: none;
+  }
+  .logo-compacto {
+    display: block;
+  }
+}

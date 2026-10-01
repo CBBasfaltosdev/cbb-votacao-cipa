@@ -1,0 +1,63 @@
+/*
+  Design tokens da CBB Asfaltos.
+  Cores de marca extraídas por amostragem de pixel do logo oficial
+  (COMPANY/BRAND/logo-cbb-asfaltos.png, no repositório de documentação).
+  Cores de ação são derivadas das cores de marca para passar em contraste
+  WCAG AA com texto branco — a cor de marca pura fica reservada para a
+  faixa de identidade do cabeçalho e para o próprio logo.
+*/
+
+:root {
+  /* Marca — uso decorativo (faixa de cabeçalho, símbolo), não como fundo de texto pequeno */
+  --cbb-amarelo: #ffc629;
+  --cbb-laranja: #faa731;
+  --cbb-verde: #008f4f;
+  --cbb-azul: #00a3e0;
+
+  /* Ação — derivadas da marca, verificadas para contraste AA com texto branco */
+  --color-primary: #00793f;
+  --color-primary-hover: #005c30;
+  --color-primary-active: #004526;
+  --color-primary-subtle: rgba(0, 143, 79, 0.08);
+  --color-link: #0077a8;
+  --color-link-hover: #005e85;
+
+  /* Neutros — da própria marca (wordmark "cbb" + "ASFALTOS") */
+  --color-ink: #373435;
+  --color-text: #59575a;
+  --color-text-muted: #727476;
+  --color-border: #e4e2e3;
+  --color-border-strong: #c9c6c8;
+  --color-surface: #ffffff;
+  --color-surface-alt: #f7f6f5;
+
+  /* Semânticas */
+  --color-success: #00793f;
+  --color-success-bg: #e7f5ec;
+  --color-error: #b3261e;
+  --color-error-bg: #fbeae9;
+  --color-warning-text: #8a5a00;
+  --color-warning-bg: #fff4e0;
+  --color-disabled-text: #9aa0a6;
+  --color-disabled-text-strong: #5f646a;
+  --color-disabled-bg: #f1f1f2;
+
+  /* Espaçamento */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 24px;
+  --space-6: 32px;
+  --space-7: 48px;
+  --space-8: 64px;
+
+  /* Raio e sombra */
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 16px;
+  --shadow-modal: 0 12px 32px -8px rgba(55, 52, 53, 0.25);
+
+  /* Tipografia — Manrope (self-hosted via @fontsource-variable, sem depender de CDN externo) */
+  --font-sans: 'Manrope Variable', Manrope, system-ui, 'Segoe UI', Roboto, sans-serif;
+}

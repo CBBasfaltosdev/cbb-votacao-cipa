@@ -1,0 +1,68 @@
+:root {
+  font: 16px/1.5 var(--font-sans);
+  color-scheme: light;
+  color: var(--color-text);
+  background: var(--color-surface);
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--color-surface);
+}
+
+h1,
+h2,
+h3 {
+  font-family: var(--font-sans);
+  color: var(--color-ink);
+  margin: 0;
+}
+
+h1 {
+  font-size: 1.75rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+
+h2 {
+  font-size: 1.25rem;
+  font-weight: 700;
+}
+
+h3 {
+  font-size: 1.0625rem;
+  font-weight: 600;
+}
+
+p {
+  margin: 0;
+}
+
+a {
+  color: var(--color-link);
+}
+
+a:hover {
+  color: var(--color-link-hover);
+}
+
+button {
+  font-family: inherit;
+}
+
+@media (min-width: 1024px) {
+  h1 {
+    font-size: 2.25rem;
+  }
+  h2 {
+    font-size: 1.5rem;
+  }
+}
