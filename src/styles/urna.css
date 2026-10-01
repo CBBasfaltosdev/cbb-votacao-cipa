@@ -13,7 +13,7 @@
   --urna-alvo-min: 64px;        /* piso de qualquer controle tocável */
   --urna-alvo-primario: 80px;   /* ação primária */
   --urna-alvo-decisivo: 96px;   /* "Começar a votar", "Confirmar meu voto" */
-  --urna-alvo-linha: 96px;      /* linha de candidato */
+  --urna-alvo-linha: 112px;     /* linha de candidato (com foto de 72px) */
   --urna-largura-max: 640px;    /* senão, em tablet deitado, número e nome vão para pontas opostas */
   --urna-gutter: var(--space-5);
 
@@ -191,6 +191,14 @@
   list-style: none;
 }
 
+/*
+  A barra de "Confirmar voto" e sticky no rodape, entao ela passa por cima do fim da lista.
+  Sem esta folga, o ultimo candidato fica embaixo da barra e nao da para tocar nele —
+  numa eleicao isso e perda de voto, nao detalhe visual.
+*/
+.lista-candidatos + .barra-acao { margin-top: var(--space-5); }
+.cedula-com-barra { padding-bottom: calc(var(--urna-alvo-decisivo) + var(--space-6)); }
+
 .candidato {
   width: 100%;
   min-height: var(--urna-alvo-linha);
@@ -226,6 +234,15 @@
 }
 
 .candidato-escolhido .candidato-numero { background: var(--color-surface); }
+
+.candidato-foto {
+  flex: 0 0 auto;
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  object-fit: cover;
+  background: var(--color-surface-alt);
+}
 
 .candidato-dados { flex: 1; min-width: 0; }
 

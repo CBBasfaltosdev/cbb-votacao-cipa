@@ -12,6 +12,8 @@ export type Candidato = {
   numero: number | null
   nome: string
   setor: string | null
+  /** nome do arquivo em public/candidatos (ex.: '1.webp'), ou null se nao houver foto */
+  foto: string | null
 }
 
 export type Eleicao = {
@@ -97,6 +99,7 @@ export async function identificar(slug: string, cpf: string): Promise<RespostaId
         numero: (c.numero as number) ?? null,
         nome: c.nome as string,
         setor: (c.setor as string) ?? null,
+        foto: (c.foto as string) ?? null,
       })),
     },
   }

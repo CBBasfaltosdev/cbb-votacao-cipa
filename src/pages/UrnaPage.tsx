@@ -286,7 +286,7 @@ export default function UrnaPage() {
 
             {aviso && <AvisoNaTela aviso={aviso} />}
 
-            <ul className="lista-candidatos" role="radiogroup" aria-label="Candidatos">
+            <ul className="lista-candidatos cedula-com-barra" role="radiogroup" aria-label="Candidatos">
               {pessoa.candidatos.map((c) => {
                 const ativo = escolhido === c.id
                 return (
@@ -299,6 +299,16 @@ export default function UrnaPage() {
                       onClick={() => setEscolhido(ativo ? null : c.id)}
                     >
                       {c.numero !== null && <span className="candidato-numero">{c.numero}</span>}
+                      {c.foto && (
+                        <img
+                          className="candidato-foto"
+                          src={`${import.meta.env.BASE_URL}candidatos/${c.foto}`}
+                          alt=""
+                          width={72}
+                          height={72}
+                          loading="eager"
+                        />
+                      )}
                       <span className="candidato-dados">
                         <span className="candidato-nome">{c.nome}</span>
                         {c.setor && <span className="candidato-setor"> {c.setor}</span>}
