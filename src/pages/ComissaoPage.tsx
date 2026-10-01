@@ -3,12 +3,14 @@ import { Link, useParams } from 'react-router-dom'
 import logo from '../assets/logo-cbb.png'
 import {
   entrarComoComissao,
+  parcial,
   listaEleitores,
   painel,
   sair,
   sessaoAtiva,
   type EleitorNaLista,
   type PainelQuorum,
+  type Parcial,
 } from '../lib/cipaService'
 import { formatarDataHora } from '../lib/cpf'
 
@@ -31,6 +33,7 @@ export default function ComissaoPage() {
   const [quorum, setQuorum] = useState<PainelQuorum | null>(null)
   const [semAcesso, setSemAcesso] = useState(false)
   const [eleitores, setEleitores] = useState<EleitorNaLista[]>([])
+  const [placar, setPlacar] = useState<Parcial | null>(null)
   const [aba, setAba] = useState<Aba>('faltam')
   const [filtro, setFiltro] = useState('')
   const [erro, setErro] = useState<string | null>(null)
@@ -61,6 +64,10 @@ export default function ComissaoPage() {
       const lista = await listaEleitores(slug)
       if (chamada !== chamadaAtualRef.current) return
       setEleitores(lista)
+
+      const pl = await parcial(slug)
+      if (chamada !== chamadaAtualRef.current) return
+      setPlacar(pl)
     } catch {
       if (chamada === chamadaAtualRef.current) setErro('Não foi possível carregar a lista.')
     } finally {
@@ -161,18 +168,19 @@ export default function ComissaoPage() {
               </p>
             </div>
 
-            <div className="alerta-pagina">
-              Esta tela não mostra votos por candidato. A contagem só existe depois de encerrar a
-              urna.
+            <div className="acoes-comissao">
+              <button type="button" className="botao-secundario" onClick={carregar} disabled={carregando}>
+                {carregando ? 'Atualizando…' : 'Atualizar agora'}
+              </button>
+              <span className="urna-apoio">Atualiza sozinho a cada 30 segundos.</span>
             </div>
-
-            <button type="button" className="botao-secundario" onClick={carregar} disabled={carregando}>
-              {carregando ? 'Atualizando…' : 'Atualizar'}
-            </button>
           </section>
 
-          <div className="cabecalho-lista sem-impressao">
-            <div className="abas-lista">
+          {placar && <Placar dados={placar} />}
+
+          <section className="secao-comissao sem-impressao" aria-label="Lista de presença">
+            <p className="urna-micro">Lista de presença</p>
+            <div className="acoes-comissao">
               <button
                 type="button"
                 className={`aba ${aba === 'faltam' ? 'aba-ativa' : ''}`}
@@ -187,11 +195,15 @@ export default function ComissaoPage() {
               >
                 Já votaram ({votaram.length})
               </button>
+              <button
+                type="button"
+                className="botao-secundario empurra"
+                onClick={() => window.print()}
+              >
+                Imprimir lista
+              </button>
             </div>
-            <button type="button" className="botao-secundario" onClick={() => window.print()}>
-              Imprimir lista
-            </button>
-          </div>
+          </section>
 
           {/* Cabeçalho que só existe no papel — vira anexo da ata. */}
           <div className="apenas-impressao">
@@ -293,5 +305,105 @@ function LoginComissao({ onEntrou }: { onEntrou: () => void }) {
         </form>
       </div>
     </div>
+  )
+}
+
+/*
+  Placar por candidato.
+
+  Mostrado durante a votação a pedido expresso do solicitante (01/10/2026), ciente de que a
+  NR-5 trata a apuração como ato formal após o encerramento (5.5.3-i) e de que quem acessa
+  este painel é candidato na eleição. Fica o aviso na própria tela para que a comissão saiba
+  o que está vendo e registre em ata. O sigilo individual continua intacto: isto é contagem
+  agregada, não existe como ligar um voto a um eleitor.
+*/
+function Placar({ dados }: { dados: Parcial }) {
+  const vagas = dados.vagasEfetivos + dados.vagasSuplentes
+  const houveVoto = dados.totalVotos > 0
+  const lider = dados.placar[0]
+  const empateNaLideranca =
+    houveVoto && dados.placar.filter((l) => l.votos === lider?.votos).length > 1
+
+  return (
+    <section className="secao-comissao" aria-label="Apuração parcial">
+      <p className="urna-micro">
+        {dados.encerrada ? 'Resultado' : 'Parcial — votação em andamento'}
+      </p>
+
+      {!houveVoto && <p className="estado-vazio">Nenhum voto registrado ainda.</p>}
+
+      {houveVoto && (
+        <>
+          <p className="urna-destaque">
+            {dados.totalVotos} <span className="urna-apoio">votos apurados</span>
+          </p>
+
+          {!dados.encerrada && (
+            <div className="alerta-pagina">
+              Resultado <strong>parcial</strong>, com a votação ainda aberta. Pela NR-5 a apuração
+              oficial é feita depois do encerramento. Quem está em primeiro agora pode não ser o
+              eleito no fim.
+            </div>
+          )}
+
+          {empateNaLideranca && (
+            <div className="alerta-pagina">
+              Há <strong>empate</strong> na liderança. O critério de desempate precisa estar
+              publicado no edital antes do fim da votação.
+            </div>
+          )}
+
+          <ul className="placar-lista">
+            {dados.placar.map((l, i) => {
+              const eleito = dados.encerrada && l.ativo && i < dados.vagasEfetivos
+              const suplente = dados.encerrada && l.ativo && i >= dados.vagasEfetivos && i < vagas
+              const pct = dados.totalVotos > 0 ? (l.votos * 100) / dados.totalVotos : 0
+              return (
+                <li
+                  key={l.numero ?? l.nome}
+                  className={`placar-linha ${eleito ? 'placar-eleito' : ''} ${
+                    suplente ? 'placar-suplente' : ''
+                  }`}
+                >
+                  <span className="placar-posicao">{i + 1}º</span>
+                  {l.foto && (
+                    <img
+                      className="placar-foto"
+                      src={`${import.meta.env.BASE_URL}candidatos/${l.foto}`}
+                      alt=""
+                      width={48}
+                      height={48}
+                    />
+                  )}
+                  <span className="placar-dados">
+                    <span className="placar-nome">
+                      {l.numero !== null ? `${l.numero} — ` : ''}
+                      {l.nome}
+                    </span>
+                    <span className="urna-micro">{l.setor}</span>
+                    {/* o selo é textual: não depende de cor para se entender */}
+                    {eleito && <span className="selo-posicao selo-eleito">Eleito</span>}
+                    {suplente && <span className="selo-posicao">Suplente</span>}
+                    {!l.ativo && <span className="selo-posicao">Fora da disputa</span>}
+                  </span>
+                  <span className="placar-votos">
+                    <span className="placar-numero-votos">{l.votos}</span>
+                    <span className="urna-micro">{pct.toLocaleString('pt-BR', { maximumFractionDigits: 1 })}%</span>
+                  </span>
+                </li>
+              )
+            })}
+          </ul>
+
+          {dados.encerrada && !dados.urnaFechada && (
+            <div className="alerta-pagina erro">
+              A urna ainda não foi fechada. Antes de divulgar o resultado, a comissão precisa
+              executar o fechamento — é o que embaralha os votos registrados e impede reconstruir
+              a ordem em que foram dados.
+            </div>
+          )}
+        </>
+      )}
+    </section>
   )
 }

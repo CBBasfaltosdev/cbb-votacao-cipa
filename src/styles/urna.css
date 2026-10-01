@@ -453,3 +453,114 @@
   border-color: var(--color-primary);
   color: #fff;
 }
+
+
+/* ------------------------------------------------- painel da comissao */
+/*
+  Os controles estavam se sobrepondo porque "Atualizar", as abas e "Imprimir" moravam em
+  containers diferentes sem respiro entre eles. Agora cada bloco e uma faixa propria,
+  com quebra de linha quando nao cabe.
+*/
+.secao-comissao {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  padding: var(--space-5) 0;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.acoes-comissao {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-3);
+  margin-top: var(--space-4);
+}
+
+.acoes-comissao .aba,
+.acoes-comissao .botao-secundario {
+  min-height: 48px;
+}
+
+/* empurra "Imprimir" para a direita quando sobra espaco, sem colar nas abas */
+.acoes-comissao .empurra { margin-left: auto; }
+
+.placar-lista {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.placar-linha {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-3);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+}
+
+/* quem esta dentro do numero de vagas aparece destacado, com rotulo textual junto */
+.placar-eleito {
+  border-color: var(--color-primary);
+  background: var(--color-success-bg);
+}
+
+.placar-suplente { background: var(--color-surface-alt); }
+
+.placar-posicao {
+  flex: 0 0 auto;
+  min-width: 32px;
+  font-size: var(--urna-txt-nome);
+  font-weight: 800;
+  color: var(--color-text-muted);
+}
+
+.placar-foto {
+  flex: 0 0 auto;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  object-fit: cover;
+  background: var(--color-surface-alt);
+}
+
+.placar-dados { flex: 1; min-width: 0; }
+
+.placar-nome {
+  display: block;
+  font-size: var(--urna-txt-apoio);
+  font-weight: 700;
+  color: var(--color-ink);
+}
+
+.placar-votos {
+  flex: 0 0 auto;
+  text-align: right;
+}
+
+.placar-numero-votos {
+  display: block;
+  font-size: var(--urna-txt-nome);
+  font-weight: 800;
+  color: var(--color-ink);
+}
+
+.selo-posicao {
+  display: inline-block;
+  margin-top: var(--space-1);
+  padding: 2px var(--space-2);
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  border: 1px solid var(--color-border-strong);
+  color: var(--color-text);
+}
+
+.selo-eleito { background: var(--color-primary); border-color: var(--color-primary); color: #fff; }
