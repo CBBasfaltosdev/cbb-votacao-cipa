@@ -53,6 +53,17 @@
 
 .urna-centrado { justify-content: center; text-align: left; }
 
+/*
+  A cada troca de tela o foco vai para o título, para o leitor de tela anunciar onde a pessoa
+  está. Só que o navegador desenha o contorno de foco em volta do texto, o que parece defeito
+  (uma caixa preta no meio da tela). Esconder aqui é seguro: estes títulos têm tabindex="-1",
+  ou seja, não entram na navegação por Tab — recebem foco só por código. O contorno continua
+  aparecendo normalmente em botões e campos, que é onde ele realmente importa.
+*/
+[tabindex='-1']:focus {
+  outline: none;
+}
+
 .urna-micro {
   font-size: var(--urna-txt-micro);
   font-weight: 600;
